@@ -3,3 +3,4 @@
 /target/
 /target/scala-3.1.0/classes/
 /target/scala-3.1.0/test-classes/
+*.iml
