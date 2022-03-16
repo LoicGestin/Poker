@@ -1,5 +1,6 @@
 object TP1Ex1:
 
+
   /* Définissez les opérateurs booléens suivants en utilisant des expressions conditionnelles
    * et les valeurs 'true' et 'false' */
   def not(b: Boolean): Boolean = if(b) false else true
