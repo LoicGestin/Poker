@@ -93,9 +93,10 @@ class PokerHand(val cartes: List[PlayingCard]){
 
 }
 
-object PokerFlop(val cartes: List[PlayingCard]){
+class PokerFlop(val cartes: List[PlayingCard]){
+
 }
-object PokerRiver(val cartes: List[PlayingCard]){
+class PokerRiver(val cartes: List[PlayingCard]){
 
 }
 
@@ -119,3 +120,7 @@ object ComparePH extends scala.math.Ordering[PokerHand]{
   def compare(a: PokerHand, b: PokerHand): Int = 0
 
 }
+
+object Main:
+  @main def main =
+    val sus = 0
