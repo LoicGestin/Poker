@@ -1,0 +1,6 @@
+package Poker
+
+class Hand {
+}
+
+
