@@ -1,6 +1,0 @@
-package Poker
-
-class Hand {
-}
-
-
