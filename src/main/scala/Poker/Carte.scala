@@ -43,6 +43,23 @@ package Poker
 
       def getnombre = this.nombre;
 
+
+      def suiv: Nombre = this.nombre match {
+        case Nombre.AS => Nombre.DEUX
+        case Nombre.DEUX => Nombre.TROIS
+        case Nombre.TROIS => Nombre.QUATRE
+        case Nombre.QUATRE => Nombre.CINQ
+        case Nombre.CINQ => Nombre.SIX
+        case Nombre.SIX => Nombre.SEPT
+        case Nombre.SEPT => Nombre.HUIT
+        case Nombre.HUIT => Nombre.NEUF
+        case Nombre.NEUF => Nombre.DIX
+        case Nombre.DIX => Nombre.VALET
+        case Nombre.VALET => Nombre.DAME
+        case Nombre.DAME => Nombre.ROI
+        case Nombre.ROI => Nombre.AS
+      }
+
       def getcouleur = this.couleur;
     }
 
@@ -95,20 +112,24 @@ class PokerHand(val cartes: List[PlayingCard]){
   def isThreeOAK(l : List[PlayingCard]): Boolean = l match
     case Nil => false
     case x::Nil => false
-    case x::xs => if occurenceNombreCounter(xs,x.getnombre,1)==3 then true else isThreeOAK(xs)
+    case x::xs => if occurenceNombreCounter(xs,x.getnombre,1)==3 then true else isThreeOAKAux(xs)
 
-  /*Petite suite*/
-  def isStraight: Boolean = true
+  /**Petite suite*/
+  def isStraight: Boolean = isStraightAux(this.cartes, this.cartes.head.nombre, 0)
+  def isStraightAux(l : List[PlayingCard], num: Nombre, counter:Int): Boolean = l match
+    case Nil => counter>=4
+    case x::xs => if(occurenceNombreCounter(l,x.suiv,0)>=1) then isStraightAux(l,x.suiv,counter+1) else isStraightAux(xs,x.getnombre,counter);
 
   /*Couleur*/
   def isFlush(l : List[PlayingCard]): Boolean = l match
     case Nil => false
     case x::Nil => false
-    case x::xs => if occurenceCouleurCounter(xs,x.getcouleur,1)==4 then true else isFlush(xs)
-  /*Full*/
-  def isFullHouse: Boolean = true
+    case x::xs => if occurenceCouleurCounter(xs,x.getcouleur,1)==4 then true else isFlushAux(xs)
 
-  /*Carré*/
+  /**Full*/
+  def isFullHouse(list: List[PlayingCard]): Boolean = isTwoPair && isThreeOAK
+
+  /**Carré*/
   def isFourOAK(l : List[PlayingCard]): Boolean = l match
     case Nil => false
     case x::Nil => false
@@ -140,12 +161,16 @@ object ComparePC extends scala.math.Ordering[PlayingCard] {
 
   @main def main =
 
-    def l: List[PlayingCard] = List(PlayingCard(Nombre.DEUX,Couleur.COEUR),PlayingCard(Nombre.QUATRE,Couleur.COEUR),PlayingCard(Nombre.DEUX,Couleur.COEUR),PlayingCard(Nombre.DEUX,Couleur.COEUR),PlayingCard(Nombre.DEUX,Couleur.COEUR))
-    println("ispair :"+PokerHand(l).isPair(l))
-    println("isTwopair :"+PokerHand(l).isTwoPair(l,0))
-    println("isBrelan :"+PokerHand(l).isThreeOAK(l))
-    println("isFlushpair :"+PokerHand(l).isFlush(l))
+    def l: List[PlayingCard] = List(PlayingCard(Nombre.DEUX,Couleur.COEUR),PlayingCard(Nombre.TROIS,Couleur.COEUR),PlayingCard(Nombre.QUATRE,Couleur.COEUR),PlayingCard(Nombre.CINQ,Couleur.COEUR),PlayingCard(Nombre.SIX,Couleur.COEUR))
+    println("isPair: "+PokerHand(l).isPair)
+    println("isTwoPair: "+PokerHand(l).isTwoPair)
+    println("isThreeOfAKind: "+PokerHand(l).isThreeOAK)
+    //println("isStraight: "+PokerHand(l).isStraight)
+    println(Nombre.values.toList.map(numero => l.count(_.nombre == numero)));
 
+    //println("isFlushPair: "+PokerHand(l).isFlush)
+    def sussy: List[PlayingCard] = List(PlayingCard(Nombre.AS,Couleur.COEUR),PlayingCard(Nombre.DEUX,Couleur.TREFLE),PlayingCard(Nombre.AS,Couleur.PIQUE),PlayingCard(Nombre.DEUX,Couleur.PIQUE),PlayingCard(Nombre.ROI,Couleur.PIQUE))
+    println(Nombre.values.toList.map(numero => sussy.count(_.nombre == numero)));
 
 
   /*println(ComparePC.compare(PlayingCard(Nombre.DEUX,Couleur.PIQUE),PlayingCard(Nombre.QUATRE,Couleur.COEUR)))
