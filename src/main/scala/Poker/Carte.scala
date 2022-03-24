@@ -7,7 +7,6 @@ package Poker
       case TREFLE
 
     enum Nombre:
-
       case AS
       case DEUX
       case TROIS
@@ -67,49 +66,51 @@ package Poker
 
 class PokerHand(val cartes: List[PlayingCard]){
 
-  enum Hands:
-    case HIGHCARD
-    case PAIR
-    case TWOPAIR
-    case THREEOAK
-    case STRAIGHT
-    case FLUSH
-    case FULLHOUSE
-    case FOUROAK
-    case STRAIGHTFLUSH
-    case ROYALFLUSH
+  //enum Hands:
+  //  case HIGHCARD
+  //  case PAIR
+  //  case TWOPAIR
+  //  case THREEOAK
+  //  case STRAIGHT
+  //  case FLUSH
+  //  case FULLHOUSE
+  //  case FOUROAK
+  //  case STRAIGHTFLUSH
+  //  case ROYALFLUSH
 
   //def allCurrentCards: List[PlayingCard] = cartes::PokerFlop.cartes::PokerRiver.cartes
 
-  // Compte le nombre de cartes avec le meme "Carte.nombre" donné en argument dans une liste de cartes
-  def occurenceNombreCounter(l: List[PlayingCard], v: Nombre, curr:Int): Int = l match {
+  def ListeOccurencesNombre: List[Int] = Nombre.values.toList.map(numero => this.cartes.count(_.nombre == numero));
+
+  /**Compte le nombre de cartes avec le meme "Carte.nombre" donné en argument dans une liste de cartes*/
+  def occurenceNombreCounter(l: List[PlayingCard], v: Nombre, curr: Int): Int = l match {
     case Nil => curr
     case x::xs => if(x.getnombre==v) occurenceNombreCounter(xs,v,curr+1) else occurenceNombreCounter(xs,v,curr)
   }
 
-  // Compte le nombre de cartes avec le meme "Carte.couleur" donné en argument dans une liste de cartes
+  /**Compte le nombre de cartes avec le meme "Carte.couleur" donné en argument dans une liste de cartes*/
   def occurenceCouleurCounter(l: List[PlayingCard], v: Couleur, curr:Int): Int = l match {
     case Nil => curr
     case x::xs => if(x.getcouleur==v) occurenceCouleurCounter(xs,v,curr+1) else occurenceCouleurCounter(xs,v,curr)
   }
 
+  /**Paire*/
+  def isPair: Boolean = isPairAux(ListeOccurencesNombre)
+  def isPairAux(l : List[Int]): Boolean = l.head match
+    case Nil => false
+    case 2 => true
+    case x::xs => if occurenceNombreCounter(xs,x.getnombre,1)==2 then true else isPairAux(xs)
 
-  /*Paire*/
-  def isPair(l : List[PlayingCard]): Boolean = l match
+  /**Deux Paires*/
+  def isTwoPair: Boolean = isTwoPairAux(this.cartes,0)
+  def isTwoPairAux(l : List[PlayingCard],counterPair: Int): Boolean = l match
     case Nil => false
     case x::Nil => false
-    case x::xs => if occurenceNombreCounter(xs,x.getnombre,1)==2 then true else isPair(xs)
+    case x::xs => if occurenceNombreCounter(xs,x.getnombre,1)==2 then if(counterPair==2) then true else isTwoPairAux(xs,counterPair) else isPairAux(xs)
 
-  //occurenceCounter(allCurrentCards,allCurrentCards.head.valueOf,0)
-
-  /*Deux Paires*/
-  def isTwoPair(l : List[PlayingCard],counterPair: Int): Boolean = l match
-    case Nil => false
-    case x::Nil => false
-    case x::xs => if occurenceNombreCounter(xs,x.getnombre,1)==2 then if(counterPair==2)then true else isPair(xs) else isPair(xs)
-
-  /*Brelan*/
-  def isThreeOAK(l : List[PlayingCard]): Boolean = l match
+  /**Brelan*/
+  def isThreeOAK: Boolean = isThreeOAKAux(this.cartes)
+  def isThreeOAKAux(l : List[PlayingCard]): Boolean = l match
     case Nil => false
     case x::Nil => false
     case x::xs => if occurenceNombreCounter(xs,x.getnombre,1)==3 then true else isThreeOAKAux(xs)
@@ -120,8 +121,9 @@ class PokerHand(val cartes: List[PlayingCard]){
     case Nil => counter>=4
     case x::xs => if(occurenceNombreCounter(l,x.suiv,0)>=1) then isStraightAux(l,x.suiv,counter+1) else isStraightAux(xs,x.getnombre,counter);
 
-  /*Couleur*/
-  def isFlush(l : List[PlayingCard]): Boolean = l match
+  /**Couleur*/
+  def isFlush: Boolean = isFlushAux(this.cartes)
+  def isFlushAux(l : List[PlayingCard]): Boolean = l match
     case Nil => false
     case x::Nil => false
     case x::xs => if occurenceCouleurCounter(xs,x.getcouleur,1)==4 then true else isFlushAux(xs)
@@ -135,10 +137,10 @@ class PokerHand(val cartes: List[PlayingCard]){
     case x::Nil => false
     case x::xs => if occurenceNombreCounter(xs,x.getnombre,1)==4 then true else isFourOAK(xs)
 
-  /*Grande suite*/
+  /**Grande suite*/
   def isStraightFlush: Boolean = true
 
-  /*Suite royale*/
+  /**Suite royale*/
   def isRoyalFlush: Boolean = true
 
 
