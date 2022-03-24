@@ -80,7 +80,19 @@ class PokerHand(val cartes: List[PlayingCard]){
 
   //def allCurrentCards: List[PlayingCard] = cartes::PokerFlop.cartes::PokerRiver.cartes
 
+  def printHands(): Unit = println("" +
+    "Paire: "+isPair+"\n"+
+    "Double Paire: "+isTwoPair+"\n"+
+    "Brelan: "+isThreeOAK+"\n"+
+    "Carré: "+isFourOAK+"\n"+
+    "Couleur: "+isFlush+"\n"+
+    "Suite: "+isStraight+"\n"+
+    "Suite flush: "+isStraightFlush+"\n"+
+    "Full: "+isFullHouse+"\n"+
+    "Royale: "+isRoyalFlush+"\n")
+
   def ListeOccurencesNombre: List[Int] = Nombre.values.toList.map(numero => this.cartes.count(_.nombre == numero));
+  def ListeOccurencesCouleur: List[Int] = Couleur.values.toList.map(coul => this.cartes.count(_.couleur == coul));
 
   /**Compte le nombre de cartes avec le meme "Carte.nombre" donné en argument dans une liste de cartes*/
   def occurenceNombreCounter(l: List[PlayingCard], v: Nombre, curr: Int): Int = l match {
@@ -95,54 +107,53 @@ class PokerHand(val cartes: List[PlayingCard]){
   }
 
   /**Paire*/
-  def isPair: Boolean = isPairAux(ListeOccurencesNombre)
-  def isPairAux(l : List[Int]): Boolean = l.head match
-    case Nil => false
-    case 2 => true
-    case x::xs => if occurenceNombreCounter(xs,x.getnombre,1)==2 then true else isPairAux(xs)
+  def isPair: Boolean = isPairAux(ListeOccurencesNombre,0)
+  def isPairAux(l : List[Int],count: Int): Boolean = l match
+    case Nil => count==1
+    case _ => if(l.head==2) isPairAux(l.tail,count+1) else isPairAux(l.tail,count)
 
   /**Deux Paires*/
-  def isTwoPair: Boolean = isTwoPairAux(this.cartes,0)
-  def isTwoPairAux(l : List[PlayingCard],counterPair: Int): Boolean = l match
-    case Nil => false
-    case x::Nil => false
-    case x::xs => if occurenceNombreCounter(xs,x.getnombre,1)==2 then if(counterPair==2) then true else isTwoPairAux(xs,counterPair) else isPairAux(xs)
+  def isTwoPair: Boolean = isTwoPairAux(ListeOccurencesNombre,0)
+  def isTwoPairAux(l : List[Int],count: Int): Boolean = l match
+    case Nil => count==2
+    case _ => if(l.head==2) isTwoPairAux(l.tail,count+1) else isTwoPairAux(l.tail,count)
 
   /**Brelan*/
-  def isThreeOAK: Boolean = isThreeOAKAux(this.cartes)
-  def isThreeOAKAux(l : List[PlayingCard]): Boolean = l match
+  def isThreeOAK: Boolean = isThreeOAKAux(ListeOccurencesNombre)
+  def isThreeOAKAux(l : List[Int]): Boolean = l match
     case Nil => false
-    case x::Nil => false
-    case x::xs => if occurenceNombreCounter(xs,x.getnombre,1)==3 then true else isThreeOAKAux(xs)
-
-  /**Petite suite*/
-  def isStraight: Boolean = isStraightAux(this.cartes, this.cartes.head.nombre, 0)
-  def isStraightAux(l : List[PlayingCard], num: Nombre, counter:Int): Boolean = l match
-    case Nil => counter>=4
-    case x::xs => if(occurenceNombreCounter(l,x.suiv,0)>=1) then isStraightAux(l,x.suiv,counter+1) else isStraightAux(xs,x.getnombre,counter);
-
-  /**Couleur*/
-  def isFlush: Boolean = isFlushAux(this.cartes)
-  def isFlushAux(l : List[PlayingCard]): Boolean = l match
-    case Nil => false
-    case x::Nil => false
-    case x::xs => if occurenceCouleurCounter(xs,x.getcouleur,1)==4 then true else isFlushAux(xs)
-
-  /**Full*/
-  def isFullHouse(list: List[PlayingCard]): Boolean = isTwoPair && isThreeOAK
-
-  /**Carré*/
-  def isFourOAK(l : List[PlayingCard]): Boolean = l match
-    case Nil => false
-    case x::Nil => false
-    case x::xs => if occurenceNombreCounter(xs,x.getnombre,1)==4 then true else isFourOAK(xs)
+    case _ => if(l.head==3) true else isThreeOAKAux(l.tail)
 
   /**Grande suite*/
-  def isStraightFlush: Boolean = true
+  def isStraight: Boolean = isASeriesAux(ListeOccurencesNombre,0,false,0,5)
+  def isASeriesAux(l : List[Int], previous: Int, broken: Boolean, count: Int, destination: Int): Boolean = l match
+    case Nil => count==destination
+    case _ =>
+      if(l.head==1&&(!broken)) isASeriesAux(l.tail,1,broken,count+1,destination)
+      else if(l.head!=1&&(!broken)&&previous==1) isASeriesAux(l.tail,0,true,count,destination)
+      else isASeriesAux(l.tail,0,false,count,destination)
+
+  /**Couleur*/
+  def isFlush: Boolean = isFlushAux(ListeOccurencesCouleur)
+  def isFlushAux(l : List[Int]): Boolean = l match
+    case Nil => false
+    case _ => if(l.head==5) true else isFlushAux(l.tail)
+
+  def isStraightFlush: Boolean = isStraight&&isFlush
+
+  /**Full*/
+  def isFullHouse: Boolean = isPair && isThreeOAK
+
+  /**Carré*/
+  def isFourOAK: Boolean = isFourOAKAux(ListeOccurencesNombre)
+  def isFourOAKAux(l : List[Int]): Boolean = l match
+    case Nil => false
+    case _ => if (l.head==4) true else isFourOAKAux(l.tail)
 
   /**Suite royale*/
-  def isRoyalFlush: Boolean = true
+  def isRoyalFlush: Boolean = isFlush&&isASeriesAux(ListeOccurencesNombre.head::ListeOccurencesNombre.drop(9),0,false,0,5)
 
+  //def isHighCard: !(isPair || isTwoPair || isThreeOAK || isFourOAK || isStraight || isFlush)
 
 }
 
@@ -161,18 +172,7 @@ object ComparePC extends scala.math.Ordering[PlayingCard] {
     else 0
 
 
-  @main def main =
 
-    def l: List[PlayingCard] = List(PlayingCard(Nombre.DEUX,Couleur.COEUR),PlayingCard(Nombre.TROIS,Couleur.COEUR),PlayingCard(Nombre.QUATRE,Couleur.COEUR),PlayingCard(Nombre.CINQ,Couleur.COEUR),PlayingCard(Nombre.SIX,Couleur.COEUR))
-    println("isPair: "+PokerHand(l).isPair)
-    println("isTwoPair: "+PokerHand(l).isTwoPair)
-    println("isThreeOfAKind: "+PokerHand(l).isThreeOAK)
-    //println("isStraight: "+PokerHand(l).isStraight)
-    println(Nombre.values.toList.map(numero => l.count(_.nombre == numero)));
-
-    //println("isFlushPair: "+PokerHand(l).isFlush)
-    def sussy: List[PlayingCard] = List(PlayingCard(Nombre.AS,Couleur.COEUR),PlayingCard(Nombre.DEUX,Couleur.TREFLE),PlayingCard(Nombre.AS,Couleur.PIQUE),PlayingCard(Nombre.DEUX,Couleur.PIQUE),PlayingCard(Nombre.ROI,Couleur.PIQUE))
-    println(Nombre.values.toList.map(numero => sussy.count(_.nombre == numero)));
 
 
   /*println(ComparePC.compare(PlayingCard(Nombre.DEUX,Couleur.PIQUE),PlayingCard(Nombre.QUATRE,Couleur.COEUR)))
