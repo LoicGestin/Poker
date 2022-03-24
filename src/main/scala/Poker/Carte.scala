@@ -95,7 +95,7 @@ class PokerHand(val cartes: List[PlayingCard]){
   def isThreeOAK(l : List[PlayingCard]): Boolean = l match
     case Nil => false
     case x::Nil => false
-    case x::xs => if occurenceNombreCounter(xs,x.getnombre,1)==3 then true else isPair(xs)
+    case x::xs => if occurenceNombreCounter(xs,x.getnombre,1)==3 then true else isThreeOAK(xs)
 
   /*Petite suite*/
   def isStraight: Boolean = true
@@ -143,6 +143,7 @@ object ComparePC extends scala.math.Ordering[PlayingCard] {
     def l: List[PlayingCard] = List(PlayingCard(Nombre.DEUX,Couleur.COEUR),PlayingCard(Nombre.QUATRE,Couleur.COEUR),PlayingCard(Nombre.DEUX,Couleur.COEUR),PlayingCard(Nombre.DEUX,Couleur.COEUR),PlayingCard(Nombre.DEUX,Couleur.COEUR))
     println("ispair :"+PokerHand(l).isPair(l))
     println("isTwopair :"+PokerHand(l).isTwoPair(l,0))
+    println("isBrelan :"+PokerHand(l).isThreeOAK(l))
     println("isFlushpair :"+PokerHand(l).isFlush(l))
 
 
