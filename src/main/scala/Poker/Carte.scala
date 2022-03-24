@@ -91,6 +91,8 @@ class PokerHand(val cartes: List[PlayingCard]){
     "Full: "+isFullHouse+"\n"+
     "Royale: "+isRoyalFlush+"\n")
 
+
+
   def ListeOccurencesNombre: List[Int] = Nombre.values.toList.map(numero => this.cartes.count(_.nombre == numero));
   def ListeOccurencesCouleur: List[Int] = Couleur.values.toList.map(coul => this.cartes.count(_.couleur == coul));
 
@@ -170,20 +172,27 @@ object ComparePC extends scala.math.Ordering[PlayingCard] {
     if (a.valueOf > b.valueOf) 1
     else if (a.valueOf < b.valueOf) -1
     else 0
-
-
-
-
-
-  /*println(ComparePC.compare(PlayingCard(Nombre.DEUX,Couleur.PIQUE),PlayingCard(Nombre.QUATRE,Couleur.COEUR)))
-  println(ComparePC.compare(PlayingCard(Nombre.HUIT,Couleur.PIQUE),PlayingCard(Nombre.QUATRE,Couleur.COEUR)))
-  println(ComparePC.compare(PlayingCard(Nombre.AS,Couleur.PIQUE),PlayingCard(Nombre.ROI,Couleur.COEUR)))
-  println(ComparePC.compare(PlayingCard(Nombre.AS,Couleur.PIQUE),PlayingCard(Nombre.AS,Couleur.COEUR)))*/
-
 }
 
 object ComparePH extends scala.math.Ordering[PokerHand]{
   def compare(a: PokerHand, b: PokerHand): Int = 0
+
+}
+
+object HandIdentifier{
+  def getBestHand(a: List[PlayingCard]): String =
+    if(a.size!=5) "Invalid list argument"
+    else {
+      def poker: PokerHand = PokerHand(a)
+      if poker.isRoyalFlush then "Royal Flush"
+      else if poker.isStraightFlush then "Straight Flush"
+      else if poker.isFourOAK then "Four Of A Kind"
+      else if poker.isFullHouse then "Full House"
+      else if poker.isFlush then "Flush"
+      else if poker.isStraight then "Straight"
+
+    }
+
 
 }
 
