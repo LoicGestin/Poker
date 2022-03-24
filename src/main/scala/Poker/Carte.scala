@@ -96,23 +96,20 @@ class PokerHand(val cartes: List[PlayingCard]){
   def ListeOccurencesNombre: List[Int] = Nombre.values.toList.map(numero => this.cartes.count(_.nombre == numero));
   def ListeOccurencesCouleur: List[Int] = Couleur.values.toList.map(coul => this.cartes.count(_.couleur == coul));
 
-  /**Compte le nombre de cartes avec le meme "Carte.nombre" donné en argument dans une liste de cartes*/
-  def occurenceNombreCounter(l: List[PlayingCard], v: Nombre, curr: Int): Int = l match {
-    case Nil => curr
-    case x::xs => if(x.getnombre==v) occurenceNombreCounter(xs,v,curr+1) else occurenceNombreCounter(xs,v,curr)
-  }
+  def ListePlayingCardSorted: List[PlayingCard]= this.cartes.sortWith(_.valueOf > _.valueOf);
 
-  /**Compte le nombre de cartes avec le meme "Carte.couleur" donné en argument dans une liste de cartes*/
-  def occurenceCouleurCounter(l: List[PlayingCard], v: Couleur, curr:Int): Int = l match {
-    case Nil => curr
-    case x::xs => if(x.getcouleur==v) occurenceCouleurCounter(xs,v,curr+1) else occurenceCouleurCounter(xs,v,curr)
-  }
 
   /**Paire*/
   def isPair: Boolean = isPairAux(ListeOccurencesNombre,0)
   def isPairAux(l : List[Int],count: Int): Boolean = l match
     case Nil => count==1
     case _ => if(l.head==2) isPairAux(l.tail,count+1) else isPairAux(l.tail,count)
+
+  //def isPaire2: List[PlayingCard] = isPair2Aux(ListePlayingCard,Nil,0)
+  //def isPair2Aux(l : List[PlayingCard],pair: List[PlayingCard],count: Int): Boolean = l match
+    //case Nil => pair
+    //case l :: next => if(pair == Nil) then 
+    //}
 
   /**Deux Paires*/
   def isTwoPair: Boolean = isTwoPairAux(ListeOccurencesNombre,0)
@@ -178,7 +175,7 @@ object ComparePH extends scala.math.Ordering[PokerHand]{
   def compare(a: PokerHand, b: PokerHand): Int = 0
 
 }
-
+/*
 object HandIdentifier{
   def getBestHand(a: List[PlayingCard]): String =
     if(a.size!=5) "Invalid list argument"
@@ -190,12 +187,12 @@ object HandIdentifier{
       else if poker.isFullHouse then "Full House"
       else if poker.isFlush then "Flush"
       else if poker.isStraight then "Straight"
-
+      
     }
 
 
 }
 
-
+*/
 
 

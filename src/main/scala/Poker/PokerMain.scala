@@ -3,17 +3,12 @@ package Poker
 object PokerMain {
 
   @main def main() =
+    val de = 0;
 
-    def l: List[PlayingCard] = List(PlayingCard(Nombre.DEUX,Couleur.COEUR),PlayingCard(Nombre.TROIS,Couleur.COEUR),PlayingCard(Nombre.QUATRE,Couleur.COEUR),PlayingCard(Nombre.CINQ,Couleur.COEUR),PlayingCard(Nombre.SIX,Couleur.COEUR))
-    def pup: PokerHand = PokerHand(l)
-    println(pup.ListeOccurencesNombre)
-    println(pup.ListeOccurencesCouleur)
-    pup.printHands()
-
-    def lol: List[PlayingCard] = List(PlayingCard(Nombre.DEUX,Couleur.COEUR),PlayingCard(Nombre.TROIS,Couleur.COEUR),PlayingCard(Nombre.QUATRE,Couleur.COEUR),PlayingCard(Nombre.CINQ,Couleur.COEUR),PlayingCard(Nombre.SEPT,Couleur.PIQUE))
-    def bam: PokerHand= PokerHand(lol)
-    println(bam.ListeOccurencesNombre)
-    bam.printHands()
+    //val deck = List(FrenchDeck().generateDeck);
+    //Random.shuffle(deck);
+    //val flop = PokerFlop(List(deck.drop(3)));
+    //val river = PokerRiver(List(deck.drop(2)));
 
 
     def sussy: List[PlayingCard] = List(PlayingCard(Nombre.AS,Couleur.COEUR),PlayingCard(Nombre.DEUX,Couleur.TREFLE),PlayingCard(Nombre.AS,Couleur.PIQUE),PlayingCard(Nombre.DEUX,Couleur.PIQUE),PlayingCard(Nombre.ROI,Couleur.PIQUE))
