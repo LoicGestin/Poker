@@ -78,25 +78,41 @@ class PokerHand(val cartes: List[PlayingCard]){
 
 
   /*Paire*/
-  def isPair: Boolean = occurenceNombreCounter(cartes,Nombre.DEUX,0)==2                 //occurenceCounter(allCurrentCards,allCurrentCards.head.valueOf,0)
+  def isPair(l : List[PlayingCard]): Boolean = l match
+    case Nil => false
+    case x::Nil => false
+    case x::xs => if occurenceNombreCounter(xs,x.getnombre,1)==2 then true else isPair(xs)
+
+  //occurenceCounter(allCurrentCards,allCurrentCards.head.valueOf,0)
 
   /*Deux Paires*/
-  def isTwoPair: Boolean = true
+  def isTwoPair(l : List[PlayingCard],counterPair: Int): Boolean = l match
+    case Nil => false
+    case x::Nil => false
+    case x::xs => if occurenceNombreCounter(xs,x.getnombre,1)==2 then if(counterPair==2)then true else isPair(xs) else isPair(xs)
 
   /*Brelan*/
-  def isThreeOAK: Boolean = true
+  def isThreeOAK(l : List[PlayingCard]): Boolean = l match
+    case Nil => false
+    case x::Nil => false
+    case x::xs => if occurenceNombreCounter(xs,x.getnombre,1)==3 then true else isPair(xs)
 
   /*Petite suite*/
   def isStraight: Boolean = true
 
   /*Couleur*/
-  def isFlush: Boolean = true
-
+  def isFlush(l : List[PlayingCard]): Boolean = l match
+    case Nil => false
+    case x::Nil => false
+    case x::xs => if occurenceCouleurCounter(xs,x.getcouleur,1)==4 then true else isFlush(xs)
   /*Full*/
   def isFullHouse: Boolean = true
 
   /*Carré*/
-  def isFourOAK: Boolean = true
+  def isFourOAK(l : List[PlayingCard]): Boolean = l match
+    case Nil => false
+    case x::Nil => false
+    case x::xs => if occurenceNombreCounter(xs,x.getnombre,1)==4 then true else isFourOAK(xs)
 
   /*Grande suite*/
   def isStraightFlush: Boolean = true
@@ -124,9 +140,10 @@ object ComparePC extends scala.math.Ordering[PlayingCard] {
 
   @main def main =
 
-    def l: List[PlayingCard] = List(PlayingCard(Nombre.DEUX,Couleur.PIQUE),PlayingCard(Nombre.DEUX,Couleur.COEUR),PlayingCard(Nombre.TROIS,Couleur.COEUR))
-    println(PokerHand(l).occurenceNombreCounter(l,Nombre.TROIS,0))
-    println(PokerHand(l).occurenceCouleurCounter(l,Couleur.COEUR,0))
+    def l: List[PlayingCard] = List(PlayingCard(Nombre.DEUX,Couleur.COEUR),PlayingCard(Nombre.QUATRE,Couleur.COEUR),PlayingCard(Nombre.DEUX,Couleur.COEUR),PlayingCard(Nombre.DEUX,Couleur.COEUR),PlayingCard(Nombre.DEUX,Couleur.COEUR))
+    println("ispair :"+PokerHand(l).isPair(l))
+    println("isTwopair :"+PokerHand(l).isTwoPair(l,0))
+    println("isFlushpair :"+PokerHand(l).isFlush(l))
 
 
 
