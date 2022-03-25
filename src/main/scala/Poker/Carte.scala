@@ -22,7 +22,26 @@ package Poker
       case ROI
 
 
-    class PlayingCard(val nombre: Nombre, val couleur: Couleur){
+    class PlayingCard(val nombre: Nombre, val couleur: Couleur) extends Ordered[PlayingCard]{
+
+      override def compare(that: PlayingCard): Int = ComparePC.compare(this,that);
+
+      override def toString: String = stringValue + suitValue
+        def stringValue: String = this.nombre.match {
+          case Nombre.AS => "A"
+          case Nombre.VALET => "V"
+          case Nombre.DAME => "D"
+          case Nombre.ROI => "R"
+          case _ => (valueOf+1).toString
+        }
+        def suitValue: String = this.couleur match {
+          case Couleur.TREFLE => "♣"
+          case Couleur.PIQUE => "♠"
+          case Couleur.COEUR => "♥"
+          case Couleur.CARREAU => "♦"
+        }
+
+
 
       def valueOf: Int = this.nombre match {
         case Nombre.AS => 13
@@ -40,9 +59,6 @@ package Poker
         case Nombre.ROI => 12
       }
 
-      def getnombre = this.nombre;
-
-
       def suiv: Nombre = this.nombre match {
         case Nombre.AS => Nombre.DEUX
         case Nombre.DEUX => Nombre.TROIS
@@ -59,25 +75,16 @@ package Poker
         case Nombre.ROI => Nombre.AS
       }
 
-      def getcouleur = this.couleur;
+
     }
 
 
 
-class PokerHand(val cartes: List[PlayingCard]){
+class PokerHand(val cartes: List[PlayingCard]) extends Ordered[PokerHand]{
 
-  //enum Hands:
-  //  case HIGHCARD
-  //  case PAIR
-  //  case TWOPAIR
-  //  case THREEOAK
-  //  case STRAIGHT
-  //  case FLUSH
-  //  case FULLHOUSE
-  //  case FOUROAK
-  //  case STRAIGHTFLUSH
-  //  case ROYALFLUSH
+  val orderedcartes: List[PlayingCard] = this.cartes.sorted.reverse
 
+  override def compare(that: PokerHand): Int = ComparePH.compare(this,that);
   //def allCurrentCards: List[PlayingCard] = cartes::PokerFlop.cartes::PokerRiver.cartes
 
   def printHands(): Unit = println("" +
@@ -105,12 +112,6 @@ class PokerHand(val cartes: List[PlayingCard]){
     case Nil => count==1
     case _ => if(l.head==2) isPairAux(l.tail,count+1) else isPairAux(l.tail,count)
 
-  //def isPaire2: List[PlayingCard] = isPair2Aux(ListePlayingCard,Nil,0)
-  //def isPair2Aux(l : List[PlayingCard],pair: List[PlayingCard],count: Int): Boolean = l match
-    //case Nil => pair
-    //case l :: next => if(pair == Nil) then 
-    //}
-
   /**Deux Paires*/
   def isTwoPair: Boolean = isTwoPairAux(ListeOccurencesNombre,0)
   def isTwoPairAux(l : List[Int],count: Int): Boolean = l match
@@ -130,6 +131,7 @@ class PokerHand(val cartes: List[PlayingCard]){
     case _ =>
       if(l.head==1&&(!broken)) isASeriesAux(l.tail,1,broken,count+1,destination)
       else if(l.head!=1&&(!broken)&&previous==1) isASeriesAux(l.tail,0,true,count,destination)
+      else if(l.size<4&&previous!=1&&(!broken)) false
       else isASeriesAux(l.tail,0,false,count,destination)
 
   /**Couleur*/
@@ -154,6 +156,18 @@ class PokerHand(val cartes: List[PlayingCard]){
 
   //def isHighCard: !(isPair || isTwoPair || isThreeOAK || isFourOAK || isStraight || isFlush)
 
+  def valueOf: Int =
+    if isRoyalFlush then 10
+    else if isStraightFlush then 9
+    else if isFourOAK then 8
+    else if isFullHouse then 7
+    else if isFlush then 6
+    else if isStraight then 5
+    else if isThreeOAK then 4
+    else if isTwoPair then 3
+    else if isPair then 2
+    else 1
+
 }
 
 class PokerFlop(val cartes: List[PlayingCard]){
@@ -172,7 +186,16 @@ object ComparePC extends scala.math.Ordering[PlayingCard] {
 }
 
 object ComparePH extends scala.math.Ordering[PokerHand]{
-  def compare(a: PokerHand, b: PokerHand): Int = 0
+  def compare(a: PokerHand, b: PokerHand): Int =
+    if(a.valueOf > b.valueOf) 1
+    else if (a.valueOf < b.valueOf) -1
+    else {
+      val d: Int = compareAux(a.orderedcartes.head.valueOf,b.orderedcartes.head.valueOf)
+      d
+    }
+
+  def compareAux(a: Int, b: Int): Int =
+    1
 
 }
 /*
