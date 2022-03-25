@@ -28,9 +28,25 @@ object PokerMain {
     //println(deck.toString)
 
     //println(shuffled.toString)
-    val player1: PokerHand = PokerHand(r.shuffle(deck).take(7))
-    println(player1.cartes.toString)
-    println(player1.orderedcartes.toString)
+    val player1: PokerHand = PokerHand(r.shuffle(deck).take(5))
+    //println(player1.cartes.toString)
+    println("Main joueur 1: "+player1.orderedcartes.toString)
+
+    val player2: PokerHand = PokerHand(r.shuffle(deck).takeRight(5))
+    //println(player2.cartes.toString)
+    println("Main joueur 2: "+player2.orderedcartes.toString)
+
+    println(player1.ListeOccurencesNombre)
+    println(player2.ListeOccurencesNombre)
+
+    println("\n-----\n")
+    player1.printHands()
+    player2.printHands()
+
+    val fight: Int = ComparePH.compare(player1,player2)
+    if(fight == 1) println("Joueur 1 wins")
+    else if (fight == -1) println("Joueur 2 wins")
+    else println("Draw")
 
     /*shuffled = r.shuffle(shuffled)
     val p2hand: List[PlayingCard] = shuffled.take(5)
